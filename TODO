@@ -1,0 +1,23 @@
+catkin_make && rosrun openni_tracker_torreta openni_tracker_torreta 
+
+
+
+// RUNNERS
+rosrun openni_tracker_torreta openni_tracker_torreta 
+rosrun rosserial_python serial_node.py /dev/ttyACM0
+
+
+
+
+rostopic pub servo std_msgs/Float32 80
+
+rostopic pub chatter std_msgs/Float32 80
+
+
+
+
+
+// DOCS
+
+
+http://blog.mivia.dk/my-kinect-datasheet/
