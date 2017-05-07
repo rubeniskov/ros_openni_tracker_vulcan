@@ -2,11 +2,14 @@
 
 #include <ros/ros.h>
 #include <ros/package.h>
-#include <std_msgs/Float32.h>
+#include <geometry_msgs/Point32.h>
+#include <algorithm>
 
 #include <XnOpenNI.h>
 #include <XnCodecIDs.h>
 #include <XnCppWrapper.h>
+
+//#include "openni_tracker_kinect.cpp"
 
 using std::string;
 
@@ -67,7 +70,7 @@ int main(int argc, char **argv) {
     pnh.getParam("camera_frame_id", frame_id);
 
     // Create a publisher and name the topic.
-    ros::Publisher chatter_pub = nh.advertise<std_msgs::Float32>("chatter", 1);
+    ros::Publisher vulcanuino_pub = nh.advertise<geometry_msgs::Point32>("vulcanuino", 1);
                 
 	while (ros::ok()) {
 		g_Context.WaitAndUpdateAll();
@@ -83,9 +86,11 @@ int main(int argc, char **argv) {
 	    	g_UserGenerator.GetCoM(user, center);
 	    	if(center.X + center.Y + center.Z > 0){
 	    		//ROS_INFO("X: %f, Y:%f Z: %f\n", center.X, center.Y, center.Z);
-	    		std_msgs::Float32 msg;
-	    		msg.data = (center.X + 500) / 1000;
-	    		chatter_pub.publish(msg);
+	    		geometry_msgs::Point32 msg;
+	    		msg.x = 1 - std::max<float>(0.0, std::min<float>(1.0, (center.X + 1000) / 2000));
+	    		msg.y = std::max<float>(0.0, std::min<float>(1.0, (center.Y + 500) / 1000));
+	    		msg.z = std::max<float>(0.0, std::min<float>(1.0, (center.Z) / 4000));
+	    		vulcanuino_pub.publish(msg);
 	    		//publishMessage
 	    	}
 	    }
