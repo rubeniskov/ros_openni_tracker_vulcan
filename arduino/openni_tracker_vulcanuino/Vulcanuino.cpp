@@ -109,15 +109,15 @@ unsigned int Vulcanuino::xAxisTargetDegrees(){
 }
 
 bool Vulcanuino::xAxisMoveTo(unsigned int degrees){
-    if(this->_state & Vulcanuino::STATE_READY) {
+    //if(this->_state & Vulcanuino::STATE_READY) {
         unsigned int steps = this->xAxisDegrees2steps(degrees);
-        // this->_xAxisStepper.move(100);
-        // this->_xAxisStepper.setSpeed(100);
+        
+        
         if(this->_xAxisStepper.distanceToGo() == 0) {
             this->_xAxisStepper.moveTo(steps);
         }
         this->_xAxisStepper.run();
-    }
+    //}
     return false;
 }
 
@@ -126,7 +126,8 @@ bool Vulcanuino::yAxisMoveTo(unsigned int degrees){
 }
 
 bool Vulcanuino::axisMoveTo(unsigned int degreesX, unsigned int degreesY){
-    return this->xAxisMoveTo(degreesX) || this->yAxisMoveTo(degreesY);
+    this->xAxisMoveTo(degreesX);
+    this->yAxisMoveTo(degreesY);
 }
 
 void Vulcanuino::menuSettings(){
@@ -182,9 +183,9 @@ void Vulcanuino::draw(){
 
 void Vulcanuino::run() {
     this->axisInitialization();
-    this->axisCalibration();
+    //this->axisCalibration();
     // this->axisManualControl();
-    this->axisIdle();
+    //this->axisIdle();
     // byte  packet[2];
     // uint16_t xAxisValue = 0;
     // uint8_t yAxisValue = 0;
