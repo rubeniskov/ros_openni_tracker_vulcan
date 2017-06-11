@@ -6,7 +6,7 @@
 #include <AccelStepper.h>
 #include <U8g2lib.h>
 #include <Wire.h>
-#include <HardwareSerial.h>
+
 #undef round
 
 class Vulcanuino
@@ -51,7 +51,7 @@ private:
     unsigned int _xAxisRefPin;
     unsigned int _state = 0, _phase = 0;
     AccelStepper _xAxisStepper;
-    Servo _yAxisServo;
+    Servo _yAxisServoA, _yAxisServoB;
     U8G2_SSD1306_128X64_NONAME_F_HW_I2C _oledDisplay = U8G2_SSD1306_128X64_NONAME_F_HW_I2C(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
     unsigned long _lastMessageTrackingTimestamp;
 };

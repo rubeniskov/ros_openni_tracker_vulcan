@@ -1,3 +1,7 @@
+#ifndef TWI_FREQ
+#define TWI_FREQ 400000L
+#endif
+
 #include "Vulcanuino.h"
 #include <ros.h>
 #include <geometry_msgs/Point32.h>
@@ -18,9 +22,7 @@ void setup() {
 
 void loop(){ 
     nh.spinOnce();
-    vulcan.axisMoveTo(60, 60);
-    //vulcan.run();
-    //spinOnce.check();
+    vulcan.run();
 }
 
 

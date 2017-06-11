@@ -2,9 +2,11 @@
 
 Vulcanuino::Vulcanuino(unsigned int xAxisStepperAPin, unsigned int xAxisStepperBPin, unsigned int xAxisRefPin, unsigned int yAxisServoPin) {
     this->_xAxisStepper = AccelStepper(1, D6, D7);
-    this->_yAxisServo = Servo();
+    this->_yAxisServoA = Servo();
+    this->_yAxisServoB = Servo();
+    this->_yAxisServoA.attach(D0);
+    this->_yAxisServoB.attach(D3);
     this->_xAxisRefPin = xAxisRefPin;
-    // this->_yAxisServo.attach(10);
 }
 //MAX SPEED 300
 //MID SPEED 200
@@ -14,14 +16,12 @@ Vulcanuino::~Vulcanuino(void) {
 }
 
 void Vulcanuino::begin(){
-    pinMode(D4, INPUT); // X AXIS REF;
-    // pinMode(9, INPUT); // SWITCH
+    //pinMode(D4, INPUT); // X AXIS REF;
     this->_oledDisplay.setAutoPageClear(0);
     this->_oledDisplay.begin();
     this->_oledDisplay.setFont(u8g2_font_7x14_tf);
     this->_oledDisplay.setFontDirection(0);
     this->_oledDisplay.firstPage();
-    //Serial.begin(9600);
 }
 
 void Vulcanuino::axisInitialization(){
@@ -29,7 +29,6 @@ void Vulcanuino::axisInitialization(){
         if(this->_phase == Vulcanuino::PHASE_INITIALIZING){
             this->_xAxisStepper.setAcceleration(1000);
             this->_xAxisStepper.setMaxSpeed(300);
-            // kalmanX.setAngle(0);
             this->_phase &= ~Vulcanuino::PHASE_INITIALIZING;
             this->_state |= Vulcanuino::STATE_INITIALIZED;
         } else if(this->_phase == 0) {
@@ -109,20 +108,18 @@ unsigned int Vulcanuino::xAxisTargetDegrees(){
 }
 
 bool Vulcanuino::xAxisMoveTo(unsigned int degrees){
-    //if(this->_state & Vulcanuino::STATE_READY) {
+    if(this->_state & Vulcanuino::STATE_READY) {
         unsigned int steps = this->xAxisDegrees2steps(degrees);
-        
-        
         if(this->_xAxisStepper.distanceToGo() == 0) {
             this->_xAxisStepper.moveTo(steps);
         }
         this->_xAxisStepper.run();
-    //}
-    return false;
+    }
 }
 
 bool Vulcanuino::yAxisMoveTo(unsigned int degrees){
-    this->_yAxisServo.write(degrees % 180);
+    this->_yAxisServoA.write(degrees % 180);
+    this->_yAxisServoB.write(degrees % 180);
 }
 
 bool Vulcanuino::axisMoveTo(unsigned int degreesX, unsigned int degreesY){
@@ -169,7 +166,7 @@ void Vulcanuino::draw(){
             this->_oledDisplay.clearBuffer();
             this->_oledDisplay.setFont(u8g2_font_7x14_tf);
             this->_oledDisplay.drawStr(0,15,"X Axis:");
-            this->_oledDisplay.drawStr(64,15, u8g2_u8toa(this->xAxisTargetDegrees(), 3));
+            this->_oledDisplay.drawStr(64,15, u8g2_u8toa(this->xAxisCurrentDegrees(), 3));
             this->_oledDisplay.drawStr(0,30,"Y Axis:");
             this->_oledDisplay.drawStr(64,30, u8g2_u8toa(0, 3));
             this->_oledDisplay.drawStr(0,45,"S:");
@@ -181,11 +178,16 @@ void Vulcanuino::draw(){
     } while(this->_oledDisplay.nextPage());
 }
 
+uint8_t d = 0;
 void Vulcanuino::run() {
     this->axisInitialization();
-    //this->axisCalibration();
+    this->axisCalibration();
     // this->axisManualControl();
     //this->axisIdle();
+    // this->_yAxisServoA.write(d);
+    // this->_yAxisServoB.write(d);
+    // delay(200);
+    // d = (d + 1) % 180;
     // byte  packet[2];
     // uint16_t xAxisValue = 0;
     // uint8_t yAxisValue = 0;
@@ -202,4 +204,9 @@ void Vulcanuino::run() {
     //     // this->axisIdle();
     // }
     //if(!this->_xAxisStepper.isRunning())this->draw();
+    //d = ((d + 1) % 10000000L);
+    //this->draw();
+    //
+    //this->yAxisMoveTo(d++);
+    //delay(200);
 }
