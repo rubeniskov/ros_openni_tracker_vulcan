@@ -12,6 +12,7 @@
 class Vulcanuino
 {
     static const unsigned int STEPS_TO_360         PROGMEM = 3454;
+    static const unsigned int TIME_TO_IDLE         PROGMEM = 3000;
     // PHASE CONSTANTS
     static const unsigned int PHASE_INITIALIZING   PROGMEM = 0x1;
     static const unsigned int PHASE_CALIBRATING    PROGMEM = 0x2;
@@ -41,6 +42,7 @@ public:
     void menuSettings();
     void menuSettingsTrim();
 
+    void trackUser(unsigned int degreesX = 0, unsigned int degreesY = 0);
     bool axisMoveTo(unsigned int degreesX = 0, unsigned int degreesY = 0);
     bool xAxisMoveTo(unsigned int degrees);
     bool yAxisMoveTo(unsigned int degrees);
