@@ -28,8 +28,8 @@ void Vulcanuino::begin(){
 void Vulcanuino::axisInitialization(){
     if(!(this->_state & Vulcanuino::STATE_INITIALIZED)){
         if(this->_phase == Vulcanuino::PHASE_INITIALIZING){
-            this->_xAxisStepper.setAcceleration(1000);
-            this->_xAxisStepper.setMaxSpeed(300);
+            this->_xAxisStepper.setAcceleration(300);
+            this->_xAxisStepper.setMaxSpeed(100);
             this->_phase &= ~Vulcanuino::PHASE_INITIALIZING;
             this->_state |= Vulcanuino::STATE_INITIALIZED;
         } else if(this->_phase == 0) {
@@ -38,16 +38,14 @@ void Vulcanuino::axisInitialization(){
     }
 }
 
-uint8_t i = 0;
 void Vulcanuino::axisCalibration(){
     if(this->_state & Vulcanuino::STATE_INITIALIZED && !(this->_state & Vulcanuino::STATE_CALIBRATED)){
         if(this->_phase == Vulcanuino::PHASE_CALIBRATING){
             if (digitalRead(D4) == HIGH){
-                if((i = (i + 1) % Vulcanuino::STEPS_TO_360) < Vulcanuino::STEPS_TO_360 * .25){
-                    this->_xAxisStepper.move(10);
-                } else {
-                    this->_xAxisStepper.move(-10);
-                }
+                // this->_xAxisStepper.setMaxSpeed(1000);
+                //this->_xAxisStepper.move(100);
+                this->_xAxisStepper.setMaxSpeed(200);
+                this->xAxisMoveTo(this->xAxisCurrentDegrees() >= 360 ? 0 : 360);
                 this->yAxisMoveTo(90);
             } else {
                 this->_xAxisStepper.setCurrentPosition(this->xAxisDegrees2steps(180));
@@ -55,6 +53,7 @@ void Vulcanuino::axisCalibration(){
                 this->_state |= Vulcanuino::STATE_CALIBRATED;
             }
         } else if(this->_phase == 0) {
+            this->_xAxisStepper.setCurrentPosition(this->xAxisDegrees2steps(0));
             this->_phase = Vulcanuino::PHASE_CALIBRATING;
         }
     }
@@ -76,7 +75,8 @@ void Vulcanuino::trackUser(unsigned int degreesX, unsigned int degreesY) {
 void Vulcanuino::axisIdle() {
     if(this->_state == Vulcanuino::STATE_READY) {
         if(this->_phase == Vulcanuino::PHASE_IDLING){
-            this->_xAxisStepper.setMaxSpeed(100);
+            this->_xAxisStepper.setMaxSpeed(300);
+                                                                // 135
             this->xAxisMoveTo(this->xAxisCurrentDegrees() >= 225 ? 135 : 225);
             this->yAxisMoveTo(90);
         } else if(millis() - this->_lastMessageTrackingTimestamp > Vulcanuino::TIME_TO_IDLE) {
@@ -125,6 +125,8 @@ bool Vulcanuino::xAxisMoveTo(unsigned int degrees){
         unsigned int steps = this->xAxisDegrees2steps(degrees);
         if(this->_xAxisStepper.distanceToGo() == 0) {
             this->_xAxisStepper.moveTo(steps);
+        } else if(digitalRead(D4) == LOW){
+            this->_xAxisStepper.updateCurrentPosition(this->xAxisDegrees2steps(180));
         }
     }
 }

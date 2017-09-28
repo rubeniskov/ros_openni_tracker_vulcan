@@ -3,7 +3,7 @@
 
 #include <ESP8266WiFi.h>
 #include <Servo.h>
-#include <AccelStepper.h>
+#include "AccelStepper.h"
 #include <U8g2lib.h>
 #include <Wire.h>
 
@@ -51,6 +51,7 @@ protected:
     unsigned int xAxisSteps2Degrees(unsigned int steps);
 private:
     unsigned int _xAxisRefPin;
+    unsigned int _XPosDiff = 0;
     unsigned int _state = 0, _phase = 0;
     AccelStepper _xAxisStepper;
     Servo _yAxisServoA, _yAxisServoB;
